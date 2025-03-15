@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/InstaViewAI/genie/logger/log"
+	"github.com/anashasan312/movie-reservation-system/logger"
 )
 
 func main() {
