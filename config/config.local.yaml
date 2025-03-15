@@ -1,3 +1,9 @@
+database:
+  mongodb:
+    conn_string: "mongodb://localhost:4010,localhost:4020,localhost:4030/?replicaSet=athena0"
+  postgre:
+    conn_string: "read from secret"
+
 server:
   name: atlas
   host: 0.0.0.0

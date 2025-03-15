@@ -1,16 +1,17 @@
 package config
 
-type Appconfig struct {
+type AppConfig struct {
 	Logger *Logger `mapstructure:"logger" validate:"required"`
+	Server *Server `mapstructure:"server" validate:"required"`
 }
 
-func LoadConfig(configPath, secretPath string) (*Appconfig, error) {
+func LoadConfig(configPath, secretPath string) (*AppConfig, error) {
 
 	cfg := LoadDefaultConfig()
 
 	return cfg, nil
 }
 
-func LoadDefaultConfig() *Appconfig {
-	return &Appconfig{}
+func LoadDefaultConfig() *AppConfig {
+	return &AppConfig{}
 }

@@ -1,0 +1,94 @@
+version: "3.9"
+name: local-env
+services:
+  mongo1:
+    container_name: mongo1
+    image: mongo:7
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongo1
+    networks:
+      - mongo.network
+    ports:
+      - 4010:4010
+    volumes:
+      - mongo1.db:/data/db
+      - mongo1.config:/data/configdb
+    restart: always
+    command: mongod --replSet athena0 --port 4010 --bind_ip_all
+
+  mongo2:
+    container_name: mongo2
+    image: mongo:7
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongo2
+    networks:
+      - mongo.network
+    ports:
+      - 4020:4020
+    depends_on:
+      - mongo1
+    volumes:
+      - mongo2.db:/data/db
+      - mongo2.config:/data/configdb
+    restart: always
+    command: mongod --replSet athena0 --port 4020 --bind_ip_all
+
+  mongo3:
+    container_name: mongo3
+    image: mongo:7
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongo3
+    networks:
+      - mongo.network
+    ports:
+      - 4030:4030
+    depends_on:
+      - mongo1
+      - mongo2
+    volumes:
+      - mongo3.db:/data/db
+      - mongo3.config:/data/configdb
+    restart: always
+    links:
+      - mongo1:mongo1
+      - mongo2:mongo2
+    command: mongod --replSet athena0 --port 4030 --bind_ip_all
+
+  redis:
+    container_name: redis
+    image: redis/redis-stack-server:7.4.0-v2
+    ports:
+      - "6379:6379"
+    volumes:
+        - redis.data:/data
+        - redis.config:/data/configcache
+    networks:
+        - redis.network
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3.13.7-management
+    volumes:
+      - rabbitmq.data:/data/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    restart: always
+
+networks:
+  mongo.network:
+  redis.network:
+
+volumes:
+  mongo1.db:
+  mongo1.config:
+  mongo2.db:
+  mongo2.config:
+  mongo3.db:
+  mongo3.config:
+  redis.data:
+  redis.config:
+  rabbitmq.data:
